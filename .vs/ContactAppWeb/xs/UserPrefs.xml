@@ -1,0 +1,21 @@
+﻿<Properties StartupConfiguration="{A5C5F7C1-E509-4629-93B0-A7A2C1478DA8}|https">
+  <MultiItemStartupConfigurations />
+  <MonoDevelop.Ide.Workbench>
+    <Pads>
+      <Pad Id="ProjectPad">
+        <State name="__root__">
+          <Node name="ContactAppWeb" selected="True" />
+        </State>
+      </Pad>
+    </Pads>
+  </MonoDevelop.Ide.Workbench>
+  <MonoDevelop.Ide.Workspace ActiveConfiguration="Debug" />
+  <MonoDevelop.Ide.ItemProperties.ContactAppWeb PreferredExecutionTarget="/Applications/Google Chrome.app" />
+  <MonoDevelop.Ide.DebuggingService.PinnedWatches />
+  <MonoDevelop.Ide.DebuggingService.Breakpoints>
+    <BreakpointStore>
+      <Breakpoint file="/Users/chris/Desktop/ContactAppWeb/Controllers/DataResetController.cs" relfile="Controllers/DataResetController.cs" line="19" column="1" />
+      <Breakpoint file="/Users/chris/Desktop/ContactAppWeb/Controllers/ContactController.cs" relfile="Controllers/ContactController.cs" line="94" column="1" />
+    </BreakpointStore>
+  </MonoDevelop.Ide.DebuggingService.Breakpoints>
+</Properties>
