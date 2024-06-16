@@ -1,6 +1,4 @@
 /Users/chris/Desktop/ContactAppWeb/obj/Release/net7.0/PubTmp/Out/App_Data/contactapp.db
-/Users/chris/Desktop/ContactAppWeb/obj/Release/net7.0/PubTmp/Out/App_Data/contactapp.db-shm
-/Users/chris/Desktop/ContactAppWeb/obj/Release/net7.0/PubTmp/Out/App_Data/contactapp.db-wal
 /Users/chris/Desktop/ContactAppWeb/obj/Release/net7.0/PubTmp/Out/ContactAppWeb
 /Users/chris/Desktop/ContactAppWeb/obj/Release/net7.0/PubTmp/Out/appsettings.Development.json
 /Users/chris/Desktop/ContactAppWeb/obj/Release/net7.0/PubTmp/Out/appsettings.json

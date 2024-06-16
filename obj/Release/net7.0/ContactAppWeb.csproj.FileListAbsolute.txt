@@ -556,8 +556,6 @@
 /Users/chris/Desktop/ContactAppWeb/obj/Release/net7.0/ContactAppWeb.genruntimeconfig.cache
 /Users/chris/Desktop/ContactAppWeb/obj/Release/net7.0/ref/ContactAppWeb.dll
 /Users/chris/Desktop/ContactAppWeb/bin/Release/net7.0/App_Data/contactapp.db
-/Users/chris/Desktop/ContactAppWeb/bin/Release/net7.0/App_Data/contactapp.db-shm
-/Users/chris/Desktop/ContactAppWeb/bin/Release/net7.0/App_Data/contactapp.db-wal
 /Users/chris/Desktop/ContactAppWeb/bin/Release/net7.0/Views/Contact/SearchResults.cshtml
 /Users/chris/Desktop/ContactAppWeb/bin/Release/net7.0/System.Web.Mvc.dll
 /Users/chris/Desktop/ContactAppWeb/bin/Release/net7.0/System.Web.Razor.dll
