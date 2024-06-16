@@ -1,8 +1,8 @@
-﻿using ContactAppWeb.Data; // Import the necessary namespace for DataContext
+﻿using ContactAppWeb.Data; 
 
 namespace ContactAppWeb
 {
-    // A background service to reset the database at regular intervals
+    
     public class DatabaseResetService : BackgroundService
     {
         private readonly IServiceProvider _serviceProvider;
@@ -26,7 +26,7 @@ namespace ContactAppWeb
                     var dbContext = scope.ServiceProvider.GetRequiredService<DataContext>();
 
                     // Reset the database by reseeding with initial contacts
-                    DataSeeder.SeedInitialContacts(dbContext);
+                    DataSeeder.SeedInitialContacts(dbContext, _serviceProvider);
                 }
 
                 // Delay the background task for 24 hours

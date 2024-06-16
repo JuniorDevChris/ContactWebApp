@@ -1,83 +1,94 @@
 ﻿using ContactAppWeb.Data;
 using ContactAppWeb.Models;
+using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
-using X.PagedList; // Import the required namespace for IPagedList
+using Microsoft.EntityFrameworkCore;
+using System.Linq;
+using System.Threading.Tasks;
+using X.PagedList;
 
 namespace ContactAppWeb.Controllers
 {
     public class ContactController : Controller
     {
         private readonly DataContext _db;
+        private readonly UserManager<ApplicationUser> _userManager;
 
-        public ContactController(DataContext db)
+        public ContactController(DataContext db, UserManager<ApplicationUser> userManager)
         {
-            _db = db;  // Injected DataContext instance for database operations
+            _db = db;
+            _userManager = userManager;
         }
 
         // GET: /Contact/Index
-        public IActionResult Index(string sortBy, int? page)
+        public async Task<IActionResult> Index(string sortBy, int? page)
         {
+            var user = await _userManager.GetUserAsync(User);
             var contacts = _db.ContactModels.AsQueryable();
 
-            if (sortBy == "FirstName")
+            if (user != null)
             {
-                // Retrieve all contacts from the database and order by first name 
-                contacts = _db.ContactModels.OrderBy(c => c.FirstName);
-            }
-            else if (sortBy == "LastName")
-            {
-                // Retrieve all contacts from the database and order by last name 
-                contacts = _db.ContactModels.OrderBy(c => c.LastName);
+                contacts = contacts.Where(c => c.UserId == user.Id);
             }
             else
             {
-                // Retrieve all contacts from the database and order by first name 
-                contacts = _db.ContactModels.OrderBy(c => c.FirstName);
+                contacts = contacts.Where(c => c.UserId == null); // Show only sandbox contacts for unauthenticated users
             }
 
-            // Create a paged list of contacts based on the current page and page size
+            if (sortBy == "FirstName")
+            {
+                contacts = contacts.OrderBy(c => c.FirstName);
+            }
+            else if (sortBy == "LastName")
+            {
+                contacts = contacts.OrderBy(c => c.LastName);
+            }
+            else
+            {
+                contacts = contacts.OrderBy(c => c.FirstName);
+            }
+
             var pageNumber = page ?? 1;
-
-            // Number of contacts per page
             var pageSize = 10;
-
-            // Create a paged list of contacts based on the current page and page size
             var pagedList = contacts.ToPagedList(pageNumber, pageSize);
 
             return View(pagedList);
         }
 
         // GET: /Contact/SearchResults
-        public IActionResult SearchResults(string searchUserInput, int? page)
+        public async Task<IActionResult> SearchResults(string searchUserInput, int? page)
         {
+            var user = await _userManager.GetUserAsync(User);
             ViewBag.SearchUserInput = searchUserInput;
 
-            // Query to retrieve contacts from the database
-            var contacts = from c in _db.ContactModels
-                           select c;
+            var contacts = _db.ContactModels.AsQueryable();
 
-            // Check if search input is provided
+            if (user != null)
+            {
+                contacts = contacts.Where(c => c.UserId == user.Id);
+            }
+            else
+            {
+                contacts = contacts.Where(c => c.UserId == null); // Show only sandbox contacts for unauthenticated users
+            }
+
             if (!string.IsNullOrEmpty(searchUserInput))
             {
-                // Filter contacts based on case-insensitive search input
                 contacts = contacts.Where(c =>
                     c.FirstName.ToLower().Contains(searchUserInput.ToLower()) ||
                     c.LastName.ToLower().Contains(searchUserInput.ToLower()) ||
                     c.Email.ToLower().Contains(searchUserInput.ToLower()) ||
-                    c.PhoneNumber.ToLower().Contains(searchUserInput.ToLower()));
-
-                // Order the filtered contacts by first name
-                contacts = contacts.OrderBy(c => c.FirstName);
+                    c.PhoneNumber.ToLower().Contains(searchUserInput.ToLower()))
+                    .OrderBy(c => c.FirstName);
             }
             else
             {
                 return View("NoResultsFound");
             }
 
-            int pageSize = 10; // Number of items per page
-            int pageNumber = page ?? 1; // Default to page 1 if no page parameter is provided
-
-            // Create a paged list of contacts based on the current page and page size
+            int pageSize = 10;
+            int pageNumber = page ?? 1;
             var pagedList = contacts.ToPagedList(pageNumber, pageSize);
 
             return View(pagedList);
@@ -91,64 +102,104 @@ namespace ContactAppWeb.Controllers
 
         // POST: /Contact/Create
         [HttpPost]
-        public IActionResult Create(ContactModel contact)
+        public async Task<IActionResult> Create(ContactModel contact)
         {
+            var user = await _userManager.GetUserAsync(User);
             if (ModelState.IsValid)
             {
-                // Add the new contact to the database and redirect to the "Index" action
+                if (user != null)
+                {
+                    contact.UserId = user.Id;
+                }
+
                 _db.ContactModels.Add(contact);
-                _db.SaveChanges();
+                await _db.SaveChangesAsync();
                 TempData["success"] = "Contact created successfully.";
                 return RedirectToAction("Index");
             }
-            // If model validation fails, return to the "Create" view with the invalid contact data
             return View(contact);
         }
 
         // GET: /Contact/Edit
-        public IActionResult Edit(int? id)
+        public async Task<IActionResult> Edit(int? id)
         {
             if (id == null || id == 0)
             {
                 return NotFound();
             }
 
-            // Retrieve the contact with the provided ID from the database
-            var contactFromDb = _db.ContactModels.Find(id);
+            var user = await _userManager.GetUserAsync(User);
+            ContactModel contactFromDb = null;
+
+            if (user != null)
+            {
+                contactFromDb = _db.ContactModels.FirstOrDefault(c => c.Id == id && c.UserId == user.Id);
+            }
+            else
+            {
+                contactFromDb = _db.ContactModels.FirstOrDefault(c => c.Id == id && c.UserId == null);
+            }
 
             if (contactFromDb == null)
             {
                 return NotFound();
             }
+
             return View(contactFromDb);
         }
 
         // POST: /Contact/Edit
         [HttpPost]
-        public IActionResult Edit(ContactModel contact)
+        public async Task<IActionResult> Edit(ContactModel contact)
         {
+            var user = await _userManager.GetUserAsync(User);
             if (ModelState.IsValid)
             {
-                // Update the contact in the database and redirect to the "Index" action
+                if (user != null)
+                {
+                    var originalContact = _db.ContactModels.AsNoTracking().FirstOrDefault(c => c.Id == contact.Id && c.UserId == user.Id);
+                    if (originalContact != null)
+                    {
+                        contact.UserId = user.Id;
+                    }
+                }
+                else
+                {
+                    var originalContact = _db.ContactModels.AsNoTracking().FirstOrDefault(c => c.Id == contact.Id && c.UserId == null);
+                    if (originalContact == null)
+                    {
+                        return BadRequest("Invalid operation for unauthenticated user.");
+                    }
+                    contact.UserId = null;
+                }
+
                 _db.ContactModels.Update(contact);
-                _db.SaveChanges();
+                await _db.SaveChangesAsync();
                 TempData["success"] = "Contact updated successfully.";
                 return RedirectToAction("Index");
             }
-            // If model validation fails, return to the "Edit" view with the invalid contact data
             return View(contact);
         }
 
         // GET: /Contact/Delete
-        public IActionResult Delete(int? id)
+        public async Task<IActionResult> Delete(int? id)
         {
             if (id == null || id == 0)
             {
                 return NotFound();
             }
 
-            // Retrieve the contact with the provided ID from the database
-            var contactFromDb = _db.ContactModels.Find(id);
+            var user = await _userManager.GetUserAsync(User);
+            ContactModel contactFromDb = null;
+
+            if (user != null)
+            {
+                contactFromDb = _db.ContactModels.FirstOrDefault(c => c.Id == id && c.UserId == user.Id);
+            }
+            else
+            {
+                contactFromDb = _db.ContactModels.FirstOrDefault(c => c.Id == id && c.UserId == null);
+            }
 
             if (contactFromDb == null)
             {
@@ -158,39 +209,38 @@ namespace ContactAppWeb.Controllers
             return View(contactFromDb);
         }
 
-        // POST: /Contact/DeleteContact
-        [HttpPost]
-        public IActionResult DeleteContact(int? id)
+        // POST: /Contact/DeleteConfirmed
+        [HttpPost, ActionName("DeleteConfirmed")]
+        public async Task<IActionResult> DeleteConfirmed(int id)
         {
-            if (id == null || id == 0)
-            {
-                return NotFound();
-            }
+            var user = await _userManager.GetUserAsync(User);
+            ContactModel contactFromDb = null;
 
-            // Retrieve the contact with the provided ID from the database
-            var contactFromDb = _db.ContactModels.Find(id);
+            if (user != null)
+            {
+                contactFromDb = _db.ContactModels.FirstOrDefault(c => c.Id == id && c.UserId == user.Id);
+            }
+            else
+            {
+                contactFromDb = _db.ContactModels.FirstOrDefault(c => c.Id == id && c.UserId == null);
+            }
 
             if (contactFromDb == null)
             {
                 return NotFound();
             }
 
-            // Delete the contact from the database and redirect to the "Index" action
             _db.ContactModels.Remove(contactFromDb);
             _db.SaveChanges();
             TempData["delete"] = "Contact deleted successfully.";
-
-            // Redirect to the "Index" action
             return RedirectToAction("Index");
         }
 
         // GET: /Contact/ResetContactsData
         public IActionResult ResetContactsData()
         {
-            // Reset the contact data by reseeding with initial contacts
-            DataSeeder.SeedInitialContacts(_db);
-
-            // Redirect to the "Index" action to show the list of contacts after resetting
+            DataSeeder.SeedInitialContacts(_db, HttpContext.RequestServices);
+            TempData["success"] = "Contacts reset successfully.";
             return RedirectToAction("Index");
         }
     }

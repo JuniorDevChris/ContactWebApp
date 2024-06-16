@@ -1,47 +1,81 @@
-﻿using ContactAppWeb.Data;
+﻿using System;
+using System.Linq;
 using ContactAppWeb.Models;
-using Bogus; // Import the Faker library
+using Microsoft.AspNetCore.Identity;
+using Microsoft.Extensions.DependencyInjection;
 
-public static class DataSeeder
+namespace ContactAppWeb.Data
 {
-    public static void SeedInitialContacts(DataContext context)
+    public static class DataSeeder
     {
-        // Check if there are existing contacts in the database and delete 
-        if (context.ContactModels.Any())
+        public static void SeedInitialContacts(DataContext context, IServiceProvider serviceProvider)
         {
-            // Remove existing contacts
-            context.ContactModels.RemoveRange(context.ContactModels);
+            // Clear existing sandbox contacts
+            var sandboxContacts = context.ContactModels.Where(c => c.UserId == null);
+            context.ContactModels.RemoveRange(sandboxContacts);
             context.SaveChanges();
-        }
 
-        // Check if there are no existing contacts in the database, then populate the database with new contacts
-        if (!context.ContactModels.Any())
-        {
-            // Create a new instance of the Faker class
-            var faker = new Faker();
-
-            // Generate and add 20 new contact instances to the database
-            for (int i = 1; i <= 20; i++)
+            // Seed new sandbox contacts (no UserId)
+            var random = new Random();
+            var newSandboxContacts = Enumerable.Range(1, 10).Select(i => new ContactModel
             {
-                // Generate a random 10-digit phone number as a string
-                string phoneNumber = faker.Phone.PhoneNumber("##########");
+                FirstName = "Sandbox" + i,
+                LastName = "User" + i,
+                PhoneNumber = GenerateRandomPhoneNumber(random),
+                Email = $"sandbox.user{i}@example.com",
+                UserId = null // Ensure UserId is null for sandbox contacts
+            }).ToList();
 
+            context.ContactModels.AddRange(newSandboxContacts);
+            context.SaveChanges();
 
-                // Create a new contact instance with dynamically generated data
-                var contact = new ContactModel
+            // Seed user-specific contacts if users do not exist
+            if (!context.Users.Any())
+            {
+                var userManager = serviceProvider.GetRequiredService<UserManager<ApplicationUser>>();
+
+                var user = new ApplicationUser
                 {
-                    FirstName = faker.Name.FirstName(),
-                    LastName = faker.Name.LastName(),
-                    PhoneNumber = phoneNumber,
-                    Email = faker.Internet.Email()
+                    UserName = "testuser@example.com",
+                    Email = "testuser@example.com",
+                    FirstName = "Test",
+                    LastName = "User",
+                    DateOfBirth = new DateTime(1990, 1, 1)
                 };
 
-                // Add the new contact instance to the database context
-                context.ContactModels.Add(contact);
-            }
+                var result = userManager.CreateAsync(user, "Password123!").Result;
 
-            // Save changes to the database to persist the new contacts
-            context.SaveChanges();
+                if (result.Succeeded)
+                {
+                    var userContacts = new List<ContactModel>
+                    {
+                        new ContactModel
+                        {
+                            FirstName = "John",
+                            LastName = "Doe",
+                            PhoneNumber = "1234567890",
+                            Email = "john.doe@example.com",
+                            UserId = user.Id
+                        },
+                        new ContactModel
+                        {
+                            FirstName = "Jane",
+                            LastName = "Doe",
+                            PhoneNumber = "0987654321",
+                            Email = "jane.doe@example.com",
+                            UserId = user.Id
+                        }
+                    };
+
+                    context.ContactModels.AddRange(userContacts);
+                    context.SaveChanges();
+                }
+            }
+        }
+
+        private static string GenerateRandomPhoneNumber(Random random)
+        {
+            return $"{random.Next(100, 1000)}{random.Next(100, 1000)}{random.Next(1000, 10000)}";
         }
     }
 }

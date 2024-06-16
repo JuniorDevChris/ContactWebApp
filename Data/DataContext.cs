@@ -1,20 +1,26 @@
 ﻿using System;
 using ContactAppWeb.Models;
+using Microsoft.AspNetCore.Identity.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore;
 
 namespace ContactAppWeb.Data
 {
-    // DataContext class inherits from DbContext, responsible for database interactions
-    public class DataContext : DbContext
+    public class DataContext : IdentityDbContext<ApplicationUser>
     {
-        // Constructor accepts DbContextOptions, used to configure database connection
-        public DataContext(DbContextOptions options) : base(options)
+        public DataContext(DbContextOptions<DataContext> options) : base(options)
         {
-            
         }
 
         // DbSet property to represent the ContactModel entity in the database
         public DbSet<ContactModel> ContactModels { get; set; }
+
+        protected override void OnModelCreating(ModelBuilder builder)
+        {
+            base.OnModelCreating(builder);
+
+            builder.Entity<ContactModel>()
+                .Property(c => c.UserId)
+                .IsRequired(false);
+        }
     }
 }
-

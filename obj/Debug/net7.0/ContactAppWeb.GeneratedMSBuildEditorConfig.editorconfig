@@ -10,11 +10,21 @@ build_property._SupportedPlatformList = Linux,macOS,Windows
 build_property.RootNamespace = ContactAppWeb
 build_property.RootNamespace = ContactAppWeb
 build_property.ProjectDir = /Users/chris/Desktop/ContactAppWeb/
+build_property.EnableComHosting = 
+build_property.EnableGeneratedComInterfaceComImportInterop = 
 build_property.RazorLangVersion = 7.0
 build_property.SupportLocalizedComponentNames = 
 build_property.GenerateRazorMetadataSourceChecksumAttributes = true
 build_property.MSBuildProjectDirectory = /Users/chris/Desktop/ContactAppWeb
 build_property._RazorSourceGeneratorDebug = 
+
+[/Users/chris/Desktop/ContactAppWeb/Views/Account/Login.cshtml]
+build_metadata.AdditionalFiles.TargetPath = Vmlld3MvQWNjb3VudC9Mb2dpbi5jc2h0bWw=
+build_metadata.AdditionalFiles.CssScope = 
+
+[/Users/chris/Desktop/ContactAppWeb/Views/Account/Register.cshtml]
+build_metadata.AdditionalFiles.TargetPath = Vmlld3MvQWNjb3VudC9SZWdpc3Rlci5jc2h0bWw=
+build_metadata.AdditionalFiles.CssScope = 
 
 [/Users/chris/Desktop/ContactAppWeb/Views/Contact/Create.cshtml]
 build_metadata.AdditionalFiles.TargetPath = Vmlld3MvQ29udGFjdC9DcmVhdGUuY3NodG1s

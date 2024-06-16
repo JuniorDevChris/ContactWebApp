@@ -4,7 +4,6 @@
 /Users/chris/Desktop/ContactAppWeb/bin/Debug/net7.0/ContactAppWeb
 /Users/chris/Desktop/ContactAppWeb/bin/Debug/net7.0/Views/Contact/SearchResults.cshtml
 /Users/chris/Desktop/ContactAppWeb/bin/Debug/net7.0/appsettings.json
-/Users/chris/Desktop/ContactAppWeb/bin/Debug/net7.0/App_Data/contactapp.db
 /Users/chris/Desktop/ContactAppWeb/bin/Debug/net7.0/ContactAppWeb.deps.json
 /Users/chris/Desktop/ContactAppWeb/bin/Debug/net7.0/ContactAppWeb.runtimeconfig.json
 /Users/chris/Desktop/ContactAppWeb/bin/Debug/net7.0/ContactAppWeb.dll
@@ -313,6 +312,7 @@
 /Users/chris/Desktop/ContactAppWeb/bin/Debug/net7.0/System.Web.WebPages.Deployment.dll
 /Users/chris/Desktop/ContactAppWeb/bin/Debug/net7.0/System.Web.WebPages.Razor.dll
 /Users/chris/Desktop/ContactAppWeb/bin/Debug/net7.0/System.Web.WebPages.dll
+/Users/chris/Desktop/ContactAppWeb/bin/Debug/net7.0/Microsoft.AspNetCore.Identity.EntityFrameworkCore.dll
 /Users/chris/Desktop/ContactAppWeb/bin/Debug/net7.0/Microsoft.AspNetCore.Mvc.Razor.Extensions.dll
 /Users/chris/Desktop/ContactAppWeb/bin/Debug/net7.0/Microsoft.AspNetCore.Mvc.Razor.RuntimeCompilation.dll
 /Users/chris/Desktop/ContactAppWeb/bin/Debug/net7.0/Microsoft.AspNetCore.Razor.Language.dll
@@ -563,9 +563,10 @@
 /Users/chris/Desktop/ContactAppWeb/obj/Debug/net7.0/scopedcss/Views/Shared/_Layout.cshtml.rz.scp.css
 /Users/chris/Desktop/ContactAppWeb/obj/Debug/net7.0/scopedcss/bundle/ContactAppWeb.styles.css
 /Users/chris/Desktop/ContactAppWeb/obj/Debug/net7.0/scopedcss/projectbundle/ContactAppWeb.bundle.scp.css
-/Users/chris/Desktop/ContactAppWeb/obj/Debug/net7.0/ContactAppWeb.csproj.CopyComplete
 /Users/chris/Desktop/ContactAppWeb/obj/Debug/net7.0/ContactAppWeb.dll
 /Users/chris/Desktop/ContactAppWeb/obj/Debug/net7.0/refint/ContactAppWeb.dll
 /Users/chris/Desktop/ContactAppWeb/obj/Debug/net7.0/ContactAppWeb.pdb
 /Users/chris/Desktop/ContactAppWeb/obj/Debug/net7.0/ContactAppWeb.genruntimeconfig.cache
 /Users/chris/Desktop/ContactAppWeb/obj/Debug/net7.0/ref/ContactAppWeb.dll
+/Users/chris/Desktop/ContactAppWeb/obj/Debug/net7.0/ContactAppWeb.sourcelink.json
+/Users/chris/Desktop/ContactAppWeb/obj/Debug/net7.0/ContactA.650D9D29.Up2Date

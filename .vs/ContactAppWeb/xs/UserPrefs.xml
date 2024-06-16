@@ -1,27 +1,36 @@
-﻿<Properties StartupConfiguration="{A5C5F7C1-E509-4629-93B0-A7A2C1478DA8}|https">
-  <MonoDevelop.Ide.Workbench ActiveDocument="Program.cs">
-    <Files>
-      <File FileName="Program.cs" Line="1" Column="1" />
-    </Files>
+﻿<Properties GitUserInfo="UsingGIT" StartupConfiguration="{A5C5F7C1-E509-4629-93B0-A7A2C1478DA8}|https">
+  <MonoDevelop.Ide.ItemProperties.ContactAppWeb PreferredExecutionTarget="/Applications/Google Chrome.app" />
+  <MonoDevelop.Ide.DebuggingService.Breakpoints>
+    <BreakpointStore>
+      <Breakpoint file="/Users/chris/Desktop/ContactAppWeb/Controllers/DataResetController.cs" relfile="Controllers/DataResetController.cs" line="19" column="1" />
+    </BreakpointStore>
+  </MonoDevelop.Ide.DebuggingService.Breakpoints>
+  <MonoDevelop.Ide.Workbench>
     <Pads>
       <Pad Id="ProjectPad">
         <State name="__root__">
           <Node name="ContactAppWeb">
-            <Node name="ContactAppWeb" expanded="True">
-              <Node name="Program.cs" selected="True" />
+            <Node name="ContactAppWeb">
+              <Node name="App_Data" expanded="True" />
+              <Node name="Controllers" expanded="True">
+                <Node name="Account" expanded="True" />
+              </Node>
+              <Node name="Data" expanded="True">
+                <Node name="DataContext.cs" selected="True" />
+              </Node>
+              <Node name="Models" expanded="True" />
+              <Node name="Views" expanded="True">
+                <Node name="Contact" expanded="True" />
+                <Node name="Shared" expanded="True" />
+              </Node>
+              <Node name="appsettings.json" expanded="True" />
             </Node>
           </Node>
         </State>
       </Pad>
     </Pads>
   </MonoDevelop.Ide.Workbench>
-  <MonoDevelop.Ide.DebuggingService.Breakpoints>
-    <BreakpointStore>
-      <Breakpoint file="/Users/chris/Desktop/ContactAppWeb/Controllers/DataResetController.cs" relfile="Controllers/DataResetController.cs" line="19" column="1" />
-    </BreakpointStore>
-  </MonoDevelop.Ide.DebuggingService.Breakpoints>
   <MonoDevelop.Ide.Workspace ActiveConfiguration="Debug" />
-  <MonoDevelop.Ide.DebuggingService.PinnedWatches />
   <MultiItemStartupConfigurations />
-  <MonoDevelop.Ide.ItemProperties.ContactAppWeb PreferredExecutionTarget="/Applications/Google Chrome.app" />
+  <MonoDevelop.Ide.DebuggingService.PinnedWatches />
 </Properties>

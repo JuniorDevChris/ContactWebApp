@@ -1,9 +1,8 @@
-﻿@model X.PagedList.IPagedList<ContactModel>;  // Model declaration: Indicates the type of model that this view expects
-
+﻿@model X.PagedList.IPagedList<ContactAppWeb.Models.ContactModel>  // Model declaration: Indicates the type of model that this view expects
 
 @{
     ViewData["Title"] = "Contacts";  // Setting the page title to "Contacts"
-}   
+}
 
 <div class="container p-3">
     <!-- Include the _Notifications partial view -->
@@ -31,15 +30,15 @@
         </div>
     </div>
 
-        <table class="table table-bordered table-striped">
-            <thead>
-                <tr>
-                    <th>First Name</th>
-                    <th>Last Name</th>
-                    <th>Phone Number</th>
-                    <th>Email</th>
-                    <th>Edit</th>
-                    <th>Delete</th>
+    <table class="table table-bordered table-striped">
+        <thead>
+            <tr>
+                <th>First Name</th>
+                <th>Last Name</th>
+                <th>Phone Number</th>
+                <th>Email</th>
+                <th>Edit</th>
+                <th>Delete</th>
             </tr>
         </thead>
         <tbody>
@@ -69,8 +68,11 @@
     </table>
 
     <div class="d-flex justify-content-between align-items-center">
-        <!-- Button to reset contact data to randomly generated entries -->
-        <a class="btn btn-danger mb-3" asp-controller="Contact" asp-action="ResetContactsData">Reset with Random Generated Contacts</a>
+        @if (!User.Identity.IsAuthenticated)
+        {
+            <!-- Button to reset contact data to randomly generated entries, only visible to unauthenticated users -->
+            <a asp-controller="Contact" asp-action="ResetContactsData" class="btn btn-primary">Reset with Randomly Generated Contacts</a>
+        }
 
         <!-- Pagination controls -->
         <div class="pagination">
