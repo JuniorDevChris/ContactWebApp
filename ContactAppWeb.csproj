@@ -16,9 +16,6 @@
     <None Remove="BackgroundServices\" />
     <None Remove="Controllers\Account\" />
     <None Remove="Views\Account\" />
-    <None Remove="App_Data\contactapp.db" />
-    <None Remove="App_Data\contactapp.db-wal" />
-    <None Remove="App_Data\contactapp.db-shm" />
     <None Remove="App_Data\" />
   </ItemGroup>
   <ItemGroup>

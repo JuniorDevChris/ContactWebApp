@@ -1,11 +1,11 @@
-﻿using System;
+﻿using Microsoft.AspNetCore.Builder;
+using Microsoft.AspNetCore.Hosting;
+using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 using ContactAppWeb.Data;
-using ContactAppWeb.Models;
-using Microsoft.AspNetCore.Identity;
-using ContactAppWeb;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -21,57 +21,29 @@ builder.Services.AddDbContext<DataContext>(options =>
     options.UseSqlite(builder.Configuration.GetConnectionString("DefaultConnection")));
 
 // Add Identity services
-builder.Services.AddIdentity<ApplicationUser, IdentityRole>()
+builder.Services.AddIdentity<IdentityUser, IdentityRole>(options => options.SignIn.RequireConfirmedAccount = true)
     .AddEntityFrameworkStores<DataContext>()
     .AddDefaultTokenProviders();
-
-builder.Services.ConfigureApplicationCookie(options =>
-{
-    options.LoginPath = "/Account/Login";
-    options.AccessDeniedPath = "/Account/AccessDenied";
-});
-
-// Add the DatabaseResetService as a hosted service
-builder.Services.AddHostedService<DatabaseResetService>();
 
 var app = builder.Build();
 
 // Configure the HTTP request pipeline.
 if (!app.Environment.IsDevelopment())
 {
-    // Use the error handler middleware for non-development environments
     app.UseExceptionHandler("/Home/Error");
-
-    // Enable HTTP Strict Transport Security (HSTS) for enhanced security (optional)
     app.UseHsts();
 }
 
-// Redirect HTTP requests to HTTPS
 app.UseHttpsRedirection();
-
-// Serve static files (e.g., CSS, JavaScript) from the wwwroot folder
 app.UseStaticFiles();
-
-// Enable routing for controllers and actions
 app.UseRouting();
-
-// Use authentication and authorization
 app.UseAuthentication();
 app.UseAuthorization();
 
-// Map the default route for the application, which uses the Contact controller and its Index action as the default route.
 app.MapControllerRoute(
     name: "default",
     pattern: "{controller=Contact}/{action=Index}/{id?}");
 
-// Seed initial contacts
-using (var scope = app.Services.CreateScope())
-{
-    var services = scope.ServiceProvider;
-    var dbContext = services.GetRequiredService<DataContext>();
+app.MapRazorPages();
 
-    DataSeeder.SeedInitialContacts(dbContext, services);
-}
-
-// Start processing incoming HTTP requests
 app.Run();

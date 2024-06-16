@@ -568,5 +568,4 @@
 /Users/chris/Desktop/ContactAppWeb/obj/Debug/net7.0/ContactAppWeb.pdb
 /Users/chris/Desktop/ContactAppWeb/obj/Debug/net7.0/ContactAppWeb.genruntimeconfig.cache
 /Users/chris/Desktop/ContactAppWeb/obj/Debug/net7.0/ref/ContactAppWeb.dll
-/Users/chris/Desktop/ContactAppWeb/obj/Debug/net7.0/ContactAppWeb.sourcelink.json
-/Users/chris/Desktop/ContactAppWeb/obj/Debug/net7.0/ContactA.650D9D29.Up2Date
+/Users/chris/Desktop/ContactAppWeb/obj/Debug/net7.0/ContactAppWeb.csproj.CopyComplete

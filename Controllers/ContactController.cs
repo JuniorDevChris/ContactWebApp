@@ -1,11 +1,8 @@
 ﻿using ContactAppWeb.Data;
 using ContactAppWeb.Models;
-using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
-using System.Linq;
-using System.Threading.Tasks;
 using X.PagedList;
 
 namespace ContactAppWeb.Controllers
@@ -13,9 +10,9 @@ namespace ContactAppWeb.Controllers
     public class ContactController : Controller
     {
         private readonly DataContext _db;
-        private readonly UserManager<ApplicationUser> _userManager;
+        private readonly UserManager<IdentityUser> _userManager;
 
-        public ContactController(DataContext db, UserManager<ApplicationUser> userManager)
+        public ContactController(DataContext db, UserManager<IdentityUser> userManager)
         {
             _db = db;
             _userManager = userManager;
@@ -51,7 +48,9 @@ namespace ContactAppWeb.Controllers
 
             var pageNumber = page ?? 1;
             var pageSize = 10;
-            var pagedList = contacts.ToPagedList(pageNumber, pageSize);
+            var pagedList = await contacts.ToPagedListAsync(pageNumber, pageSize);
+
+            ViewData["HideSearchBar"] = !pagedList.Any(); // Hide search bar if no contacts are present
 
             return View(pagedList);
         }
@@ -89,7 +88,7 @@ namespace ContactAppWeb.Controllers
 
             int pageSize = 10;
             int pageNumber = page ?? 1;
-            var pagedList = contacts.ToPagedList(pageNumber, pageSize);
+            var pagedList = await contacts.ToPagedListAsync(pageNumber, pageSize);
 
             return View(pagedList);
         }
@@ -231,7 +230,7 @@ namespace ContactAppWeb.Controllers
             }
 
             _db.ContactModels.Remove(contactFromDb);
-            _db.SaveChanges();
+            await _db.SaveChangesAsync();
             TempData["delete"] = "Contact deleted successfully.";
             return RedirectToAction("Index");
         }

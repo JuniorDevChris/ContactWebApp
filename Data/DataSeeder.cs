@@ -1,8 +1,5 @@
-﻿using System;
-using System.Linq;
-using ContactAppWeb.Models;
+﻿using ContactAppWeb.Models;
 using Microsoft.AspNetCore.Identity;
-using Microsoft.Extensions.DependencyInjection;
 
 namespace ContactAppWeb.Data
 {
@@ -32,15 +29,12 @@ namespace ContactAppWeb.Data
             // Seed user-specific contacts if users do not exist
             if (!context.Users.Any())
             {
-                var userManager = serviceProvider.GetRequiredService<UserManager<ApplicationUser>>();
+                var userManager = serviceProvider.GetRequiredService<UserManager<IdentityUser>>();
 
-                var user = new ApplicationUser
+                var user = new IdentityUser
                 {
                     UserName = "testuser@example.com",
-                    Email = "testuser@example.com",
-                    FirstName = "Test",
-                    LastName = "User",
-                    DateOfBirth = new DateTime(1990, 1, 1)
+                    Email = "testuser@example.com"
                 };
 
                 var result = userManager.CreateAsync(user, "Password123!").Result;
