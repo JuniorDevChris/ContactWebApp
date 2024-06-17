@@ -563,9 +563,9 @@
 /Users/chris/Desktop/ContactAppWeb/obj/Debug/net7.0/scopedcss/Views/Shared/_Layout.cshtml.rz.scp.css
 /Users/chris/Desktop/ContactAppWeb/obj/Debug/net7.0/scopedcss/bundle/ContactAppWeb.styles.css
 /Users/chris/Desktop/ContactAppWeb/obj/Debug/net7.0/scopedcss/projectbundle/ContactAppWeb.bundle.scp.css
+/Users/chris/Desktop/ContactAppWeb/obj/Debug/net7.0/ContactAppWeb.csproj.CopyComplete
 /Users/chris/Desktop/ContactAppWeb/obj/Debug/net7.0/ContactAppWeb.dll
 /Users/chris/Desktop/ContactAppWeb/obj/Debug/net7.0/refint/ContactAppWeb.dll
 /Users/chris/Desktop/ContactAppWeb/obj/Debug/net7.0/ContactAppWeb.pdb
 /Users/chris/Desktop/ContactAppWeb/obj/Debug/net7.0/ContactAppWeb.genruntimeconfig.cache
 /Users/chris/Desktop/ContactAppWeb/obj/Debug/net7.0/ref/ContactAppWeb.dll
-/Users/chris/Desktop/ContactAppWeb/obj/Debug/net7.0/ContactAppWeb.csproj.CopyComplete

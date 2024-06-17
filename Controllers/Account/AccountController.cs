@@ -1,17 +1,17 @@
-﻿using Microsoft.AspNetCore.Identity;
+﻿using ContactAppWeb.Models;
+using ContactAppWeb.Services;
 using Microsoft.AspNetCore.Mvc;
+using System.Threading.Tasks;
 
 namespace ContactAppWeb.Controllers.Account
 {
     public class AccountController : Controller
     {
-        private readonly UserManager<IdentityUser> _userManager;
-        private readonly SignInManager<IdentityUser> _signInManager;
+        private readonly IAccountService _accountService;
 
-        public AccountController(UserManager<IdentityUser> userManager, SignInManager<IdentityUser> signInManager)
+        public AccountController(IAccountService accountService)
         {
-            _userManager = userManager;
-            _signInManager = signInManager;
+            _accountService = accountService;
         }
 
         [HttpGet]
@@ -26,12 +26,11 @@ namespace ContactAppWeb.Controllers.Account
         {
             if (ModelState.IsValid)
             {
-                var user = new IdentityUser { UserName = model.Email, Email = model.Email };
-                var result = await _userManager.CreateAsync(user, model.Password);
+                var result = await _accountService.RegisterUserAsync(model);
                 if (result.Succeeded)
                 {
-                    await _signInManager.SignInAsync(user, isPersistent: false);
-                    return RedirectToAction("Index", "Contact"); // Redirect to Index action in Contact controller
+                    await _accountService.LoginUserAsync(new LoginViewModel { Email = model.Email, Password = model.Password });
+                    return RedirectToAction("Index", "Contact");
                 }
                 foreach (var error in result.Errors)
                 {
@@ -53,10 +52,10 @@ namespace ContactAppWeb.Controllers.Account
         {
             if (ModelState.IsValid)
             {
-                var result = await _signInManager.PasswordSignInAsync(model.Email, model.Password, model.RememberMe, lockoutOnFailure: false);
+                var result = await _accountService.LoginUserAsync(model);
                 if (result.Succeeded)
                 {
-                    return RedirectToAction("Index", "Contact"); // Redirect to Index action in Contact controller
+                    return RedirectToAction("Index", "Contact");
                 }
                 ModelState.AddModelError(string.Empty, "Invalid login attempt.");
             }
@@ -66,8 +65,8 @@ namespace ContactAppWeb.Controllers.Account
         [HttpPost]
         public async Task<IActionResult> Logout()
         {
-            await _signInManager.SignOutAsync();
-            return RedirectToAction("Index", "Contact"); // Redirect to Index action in Contact controller
+            await _accountService.LogoutUserAsync();
+            return RedirectToAction("Index", "Contact");
         }
     }
 }

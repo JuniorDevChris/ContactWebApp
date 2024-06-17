@@ -1,20 +1,20 @@
-﻿using ContactAppWeb.Data;
-using ContactAppWeb.Models;
+﻿using ContactAppWeb.Models;
+using ContactAppWeb.Services;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
-using Microsoft.EntityFrameworkCore;
+using System.Threading.Tasks;
 using X.PagedList;
 
 namespace ContactAppWeb.Controllers
 {
     public class ContactController : Controller
     {
-        private readonly DataContext _db;
+        private readonly IContactService _contactService;
         private readonly UserManager<IdentityUser> _userManager;
 
-        public ContactController(DataContext db, UserManager<IdentityUser> userManager)
+        public ContactController(IContactService contactService, UserManager<IdentityUser> userManager)
         {
-            _db = db;
+            _contactService = contactService;
             _userManager = userManager;
         }
 
@@ -22,75 +22,27 @@ namespace ContactAppWeb.Controllers
         public async Task<IActionResult> Index(string sortBy, int? page)
         {
             var user = await _userManager.GetUserAsync(User);
-            var contacts = _db.ContactModels.AsQueryable();
+            var userId = user?.Id;
+            var contacts = await _contactService.GetContactsAsync(sortBy, page, userId);
 
-            if (user != null)
-            {
-                contacts = contacts.Where(c => c.UserId == user.Id);
-            }
-            else
-            {
-                contacts = contacts.Where(c => c.UserId == null); // Show only sandbox contacts for unauthenticated users
-            }
-
-            if (sortBy == "FirstName")
-            {
-                contacts = contacts.OrderBy(c => c.FirstName);
-            }
-            else if (sortBy == "LastName")
-            {
-                contacts = contacts.OrderBy(c => c.LastName);
-            }
-            else
-            {
-                contacts = contacts.OrderBy(c => c.FirstName);
-            }
-
-            var pageNumber = page ?? 1;
-            var pageSize = 10;
-            var pagedList = await contacts.ToPagedListAsync(pageNumber, pageSize);
-
-            ViewData["HideSearchBar"] = !pagedList.Any(); // Hide search bar if no contacts are present
-
-            return View(pagedList);
+            ViewData["HideSearchBar"] = !contacts.Any();
+            return View(contacts);
         }
 
         // GET: /Contact/SearchResults
         public async Task<IActionResult> SearchResults(string searchUserInput, int? page)
         {
             var user = await _userManager.GetUserAsync(User);
-            ViewBag.SearchUserInput = searchUserInput;
+            var userId = user?.Id;
+            var contacts = await _contactService.SearchContactsAsync(searchUserInput, page, userId);
 
-            var contacts = _db.ContactModels.AsQueryable();
-
-            if (user != null)
-            {
-                contacts = contacts.Where(c => c.UserId == user.Id);
-            }
-            else
-            {
-                contacts = contacts.Where(c => c.UserId == null); // Show only sandbox contacts for unauthenticated users
-            }
-
-            if (!string.IsNullOrEmpty(searchUserInput))
-            {
-                contacts = contacts.Where(c =>
-                    c.FirstName.ToLower().Contains(searchUserInput.ToLower()) ||
-                    c.LastName.ToLower().Contains(searchUserInput.ToLower()) ||
-                    c.Email.ToLower().Contains(searchUserInput.ToLower()) ||
-                    c.PhoneNumber.ToLower().Contains(searchUserInput.ToLower()))
-                    .OrderBy(c => c.FirstName);
-            }
-            else
+            if (!contacts.Any())
             {
                 return View("NoResultsFound");
             }
 
-            int pageSize = 10;
-            int pageNumber = page ?? 1;
-            var pagedList = await contacts.ToPagedListAsync(pageNumber, pageSize);
-
-            return View(pagedList);
+            ViewBag.SearchUserInput = searchUserInput;
+            return View(contacts);
         }
 
         // GET: /Contact/Create
@@ -106,15 +58,12 @@ namespace ContactAppWeb.Controllers
             var user = await _userManager.GetUserAsync(User);
             if (ModelState.IsValid)
             {
-                if (user != null)
+                var success = await _contactService.CreateContactAsync(contact, user?.Id);
+                if (success)
                 {
-                    contact.UserId = user.Id;
+                    TempData["success"] = "Contact created successfully.";
+                    return RedirectToAction("Index");
                 }
-
-                _db.ContactModels.Add(contact);
-                await _db.SaveChangesAsync();
-                TempData["success"] = "Contact created successfully.";
-                return RedirectToAction("Index");
             }
             return View(contact);
         }
@@ -128,23 +77,13 @@ namespace ContactAppWeb.Controllers
             }
 
             var user = await _userManager.GetUserAsync(User);
-            ContactModel contactFromDb = null;
-
-            if (user != null)
-            {
-                contactFromDb = _db.ContactModels.FirstOrDefault(c => c.Id == id && c.UserId == user.Id);
-            }
-            else
-            {
-                contactFromDb = _db.ContactModels.FirstOrDefault(c => c.Id == id && c.UserId == null);
-            }
-
-            if (contactFromDb == null)
+            var contact = await _contactService.GetContactByIdAsync(id.Value, user?.Id);
+            if (contact == null)
             {
                 return NotFound();
             }
 
-            return View(contactFromDb);
+            return View(contact);
         }
 
         // POST: /Contact/Edit
@@ -154,28 +93,12 @@ namespace ContactAppWeb.Controllers
             var user = await _userManager.GetUserAsync(User);
             if (ModelState.IsValid)
             {
-                if (user != null)
+                var success = await _contactService.UpdateContactAsync(contact, user?.Id);
+                if (success)
                 {
-                    var originalContact = _db.ContactModels.AsNoTracking().FirstOrDefault(c => c.Id == contact.Id && c.UserId == user.Id);
-                    if (originalContact != null)
-                    {
-                        contact.UserId = user.Id;
-                    }
+                    TempData["success"] = "Contact updated successfully.";
+                    return RedirectToAction("Index");
                 }
-                else
-                {
-                    var originalContact = _db.ContactModels.AsNoTracking().FirstOrDefault(c => c.Id == contact.Id && c.UserId == null);
-                    if (originalContact == null)
-                    {
-                        return BadRequest("Invalid operation for unauthenticated user.");
-                    }
-                    contact.UserId = null;
-                }
-
-                _db.ContactModels.Update(contact);
-                await _db.SaveChangesAsync();
-                TempData["success"] = "Contact updated successfully.";
-                return RedirectToAction("Index");
             }
             return View(contact);
         }
@@ -189,23 +112,13 @@ namespace ContactAppWeb.Controllers
             }
 
             var user = await _userManager.GetUserAsync(User);
-            ContactModel contactFromDb = null;
-
-            if (user != null)
-            {
-                contactFromDb = _db.ContactModels.FirstOrDefault(c => c.Id == id && c.UserId == user.Id);
-            }
-            else
-            {
-                contactFromDb = _db.ContactModels.FirstOrDefault(c => c.Id == id && c.UserId == null);
-            }
-
-            if (contactFromDb == null)
+            var contact = await _contactService.GetContactByIdAsync(id.Value, user?.Id);
+            if (contact == null)
             {
                 return NotFound();
             }
 
-            return View(contactFromDb);
+            return View(contact);
         }
 
         // POST: /Contact/DeleteConfirmed
@@ -213,32 +126,19 @@ namespace ContactAppWeb.Controllers
         public async Task<IActionResult> DeleteConfirmed(int id)
         {
             var user = await _userManager.GetUserAsync(User);
-            ContactModel contactFromDb = null;
-
-            if (user != null)
+            var success = await _contactService.DeleteContactAsync(id, user?.Id);
+            if (success)
             {
-                contactFromDb = _db.ContactModels.FirstOrDefault(c => c.Id == id && c.UserId == user.Id);
+                TempData["delete"] = "Contact deleted successfully.";
+                return RedirectToAction("Index");
             }
-            else
-            {
-                contactFromDb = _db.ContactModels.FirstOrDefault(c => c.Id == id && c.UserId == null);
-            }
-
-            if (contactFromDb == null)
-            {
-                return NotFound();
-            }
-
-            _db.ContactModels.Remove(contactFromDb);
-            await _db.SaveChangesAsync();
-            TempData["delete"] = "Contact deleted successfully.";
-            return RedirectToAction("Index");
+            return NotFound();
         }
 
         // GET: /Contact/ResetContactsData
         public IActionResult ResetContactsData()
         {
-            DataSeeder.SeedInitialContacts(_db, HttpContext.RequestServices);
+            _contactService.ResetContactsData();
             TempData["success"] = "Contacts reset successfully.";
             return RedirectToAction("Index");
         }

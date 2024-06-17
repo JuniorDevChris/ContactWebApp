@@ -17,6 +17,7 @@
     <None Remove="Controllers\Account\" />
     <None Remove="Views\Account\" />
     <None Remove="App_Data\" />
+    <None Remove="Services\" />
   </ItemGroup>
   <ItemGroup>
     <Folder Include="Data\" />
@@ -26,6 +27,7 @@
     <Folder Include="Controllers\Account\" />
     <Folder Include="Views\Account\" />
     <Folder Include="App_Data\" />
+    <Folder Include="Services\" />
   </ItemGroup>
   <ItemGroup>
     <PackageReference Include="Bogus" Version="34.0.2" />
